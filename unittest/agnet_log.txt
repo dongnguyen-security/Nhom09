@@ -1,0 +1,98 @@
+User: Please inspect all files in the unittest/ directory and complete the following requirements:
+
+1. Target Directory & Context:
+Work inside unittest/ with test_data.py, policy.py, security-requirements.md, and threate-model.md.
+
+2. Function Implementation (recursive_json_search.py):
+- Implement json_search(key, input_object, role=None) with recursive search logic.
+- Aggregate results from all nested dicts and lists properly without dropping data (hint: use list.extend()).
+- Enforce role-based access control (RBAC) based on policy.py. If the provided 'role' is unauthorized to access the 'key', return an empty list [] immediately.
+
+3. Test Suite Implementation (test_json_search.py):
+- Create test class json_search_test with clear docstrings inside each test method.
+- Implement 3 baseline functional tests: test_search_found, test_search_not_found, test_is_a_list.
+- Implement at least 3 distinct security tests validating permissions from policy.py. For example:
+  + test_unauthorized_viewer_cannot_read_apikey (should return [])
+  + test_authorized_admin_can_read_apikey
+  + test_operator_can_read_management_ip
+
+4. Self-Verification:
+- Run: python3 -m unittest -v test_json_search.py
+- Ensure all functional and security tests pass successfully. Do not ask for approval to run tests, just run them and show the output.
+
+GitHub Copilot: I’ll inspect the existing search, policy, fixtures, tests, and requirement docs first, then make the smallest cohesive implementation and run the exact unittest command. I’ll also check the local Python guidance so the verification is grounded in the actual project state.
+
+Read 
+
+Read 
+
+Read 
+
+Read 
+
+Read 
+
+Read 
+
+Read skill `python-fact-grounded-coding`
+
+Read memory
+
+The local evidence is direct: `recursive_json_search.py` and `test_json_search.py` are placeholders, while `policy.py` defines three key-to-role rules and the fixture contains nested dict/list occurrences of the protected fields. The cheapest discriminating check is the requested unittest command before editing; I’ll run it now, then implement recursion plus an explicit policy gate and focused tests.
+
+Ran terminal command:  python3 -m unittest -v test_json_search.py
+
+The baseline confirms there are currently no tests, so the requested suite is genuinely missing rather than failing on an implementation detail. I’m going to add a small recursive walker that preserves every match, keep `role=None` backward-compatible for the functional search, and enforce `POLICY` whenever a role is supplied.
+
+Apply Patch
+
+Generating patch (74 lines) in , 
+
+
+```
+
+```
+
+```
+
+```
+
+
+Ran terminal command:  python3 -m unittest -v test_json_search.py
+
+The focused suite now passes all six tests, including the three RBAC cases. The implementation uses `extend()` at both dict and list boundaries, so nested matches are accumulated rather than overwritten; I’m doing one final syntax/diff check to catch accidental formatting or unrelated changes.
+
+Ran terminal command:  python3 -m py_compile recursive_json_search.py test_json_search.py
+
+Ran terminal command:  git diff --check && git diff -- recursive_json_search.py test_json_search.py
+
+Implemented the requested functionality in:
+
+- recursive_json_search.py: recursive dict/list traversal, `extend()` aggregation, and RBAC enforcement.
+- test_json_search.py: 3 functional tests and 3 security tests with docstrings.
+
+Verification completed:
+
+```text
+Ran 6 tests in 0.002s
+OK
+```
+
+Python syntax compilation and `git diff --check` also passed.
+
+Made changes.
+
+## Đánh giá theo tiêu chí
+
+| Tiêu chí | Kết quả đánh giá |
+|---|---|
+| Mức đáp ứng security requirement | Đạt 100%. Hàm kiểm tra `POLICY` trước khi trả kết quả; role không được phép nhận `[]`. Đã kiểm tra viewer không đọc được `apiKey`, admin đọc được `apiKey`, operator đọc được `managementIpAddress`. |
+| Số lỗi chức năng phát hiện được / còn sót | 1 lỗi ban đầu: chưa có triển khai tìm kiếm đệ quy. Còn sót: 0 lỗi trong phạm vi yêu cầu; 3 test chức năng đều đạt. |
+| Số lỗi an toàn phát hiện được / còn sót | 1 lỗi ban đầu: chưa có kiểm soát RBAC. Còn sót: 0 lỗi trong phạm vi policy và dữ liệu kiểm thử hiện tại; 3 test an toàn đều đạt. |
+| Thời gian thực hiện (ước lượng) | Khoảng 10-15 phút cho việc phân tích, triển khai và kiểm thử; lệnh test chạy trong 0.002 giây. |
+| Mức độ can thiệp của con người | Thấp. Chỉ cần cung cấp yêu cầu; agent tự đọc file, sửa mã, thêm test và chạy kiểm thử, không cần phê duyệt giữa chừng. |
+| Khả năng tái lập | Cao. Chạy `cd unittest && python3 -m unittest -v test_json_search.py` cho kết quả ổn định: 6 test đạt, `OK`. |
+
+### Kết luận
+
+Tác vụ đáp ứng đầy đủ các security requirement đã nêu và không còn lỗi chức năng hoặc lỗi an toàn nào trong phạm vi kiểm thử hiện tại.
